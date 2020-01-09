@@ -1,0 +1,24 @@
+//+------------------------------------------------------------------+
+//|                  EA31337 - multi-strategy advanced trading robot |
+//|                       Copyright 2016-2020, 31337 Investments Ltd |
+//|                                       https://github.com/EA31337 |
+//+------------------------------------------------------------------+
+
+// Defines strategy's parameter values for the given pair symbol and timeframe.
+struct Stg_BWMFI_EURUSD_M30_Params : Stg_BWMFI_Params {
+  Stg_BWMFI_EURUSD_M30_Params() {
+    symbol = "EURUSD";
+    tf = PERIOD_M30;
+    BWMFI_Shift = 0;
+    BWMFI_TrailingStopMethod = 0;
+    BWMFI_TrailingProfitMethod = 0;
+    BWMFI_SignalOpenLevel = 0;
+    BWMFI_SignalBaseMethod = 0;
+    BWMFI_SignalOpenMethod1 = 0;
+    BWMFI_SignalOpenMethod2 = 0;
+    BWMFI_SignalCloseLevel = 0;
+    BWMFI_SignalCloseMethod1 = 0;
+    BWMFI_SignalCloseMethod2 = 0;
+    BWMFI_MaxSpread = 0;
+  }
+};

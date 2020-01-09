@@ -6,130 +6,146 @@
 
 /**
  * @file
- * Implements BWMFI strategy.
+ * Implements BWMFI strategy based on the Market Facilitation Index indicator
  */
 
 // Includes.
-#include "../../EA31337-classes/Indicators/Indi_BWMFI.mqh"
-#include "../../EA31337-classes/Strategy.mqh"
+#include <EA31337-classes/Indicators/Indi_BWMFI.mqh>
+#include <EA31337-classes/Strategy.mqh>
 
 // User input params.
-string __BWMFI_Parameters__ = "-- Settings for the Market Facilitation Index indicator --"; // >>> BWMFI <<<
-uint BWMFI_Active_Tf = 0; // Activate timeframes (1-255, e.g. M1=1,M5=2,M15=4,M30=8,H1=16,H2=32...)
-ENUM_TRAIL_TYPE BWMFI_TrailingStopMethod = 22; // Trail stop method
-ENUM_TRAIL_TYPE BWMFI_TrailingProfitMethod = 1; // Trail profit method
-double BWMFI_SignalLevel = 0.00000000; // Signal level
-INPUT uint BWMFI_Shift = 0; // Shift (relative to the current bar, 0 - default)
-int BWMFI1_SignalMethod = 0; // Signal method for M1 (0-
-int BWMFI5_SignalMethod = 0; // Signal method for M5 (0-
-int BWMFI15_SignalMethod = 0; // Signal method for M15 (0-
-int BWMFI30_SignalMethod = 0; // Signal method for M30 (0-
-int BWMFI1_OpenCondition1 = 0; // Open condition 1 for M1 (0-1023)
-int BWMFI1_OpenCondition2 = 0; // Open condition 2 for M1 (0-)
-ENUM_MARKET_EVENT BWMFI1_CloseCondition = C_BWMFI_BUY_SELL; // Close condition for M1
-int BWMFI5_OpenCondition1 = 0; // Open condition 1 for M5 (0-1023)
-int BWMFI5_OpenCondition2 = 0; // Open condition 2 for M5 (0-)
-ENUM_MARKET_EVENT BWMFI5_CloseCondition = C_BWMFI_BUY_SELL; // Close condition for M5
-int BWMFI15_OpenCondition1 = 0; // Open condition 1 for M15 (0-)
-int BWMFI15_OpenCondition2 = 0; // Open condition 2 for M15 (0-)
-ENUM_MARKET_EVENT BWMFI15_CloseCondition = C_BWMFI_BUY_SELL; // Close condition for M15
-int BWMFI30_OpenCondition1 = 0; // Open condition 1 for M30 (0-)
-int BWMFI30_OpenCondition2 = 0; // Open condition 2 for M30 (0-)
-ENUM_MARKET_EVENT BWMFI30_CloseCondition = C_BWMFI_BUY_SELL; // Close condition for M30
-double BWMFI1_MaxSpread  =  6.0; // Max spread to trade for M1 (pips)
-double BWMFI5_MaxSpread  =  7.0; // Max spread to trade for M5 (pips)
-double BWMFI15_MaxSpread =  8.0; // Max spread to trade for M15 (pips)
-double BWMFI30_MaxSpread = 10.0; // Max spread to trade for M30 (pips)
+INPUT string __BWMFI_Parameters__ = "-- BWMFI strategy params --";  // >>> BWMFI <<<
+INPUT int BWMFI_Active_Tf = 0;  // Activated timeframes (1-255) [M1=1,M5=2,M15=4,M30=8,H1=16,H2=32,H4=64...]
+INPUT ENUM_TRAIL_TYPE BWMFI_TrailingStopMethod = 22;   // Trail stop method
+INPUT ENUM_TRAIL_TYPE BWMFI_TrailingProfitMethod = 1;  // Trail profit method
+INPUT double BWMFI_SignalOpenLevel = 0.00000000;       // Signal open level
+INPUT int BWMFI_Shift = 0;                             // Shift (relative to the current bar, 0 - default)
+INPUT int BWMFI_SignalBaseMethod = 0;                  // Signal base method (0-
+INPUT int BWMFI_SignalOpenMethod1 = 0;                 // Open condition 1 (0-1023)
+INPUT int BWMFI_SignalOpenMethod2 = 0;                 // Open condition 2 (0-)
+INPUT double BWMFI_SignalCloseLevel = 0.00000000;      // Signal close level
+INPUT ENUM_MARKET_EVENT BWMFI_SignalCloseMethod1 = C_BWMFI_BUY_SELL;  // Close condition 1
+INPUT ENUM_MARKET_EVENT BWMFI_SignalCloseMethod2 = C_BWMFI_BUY_SELL;  // Close condition 2
+INPUT double BWMFI_MaxSpread = 6.0;                                   // Max spread to trade (pips)
+
+// Struct to define strategy parameters to override.
+struct Stg_BWMFI_Params : Stg_Params {
+  int BWMFI_Shift;
+  ENUM_TRAIL_TYPE BWMFI_TrailingStopMethod;
+  ENUM_TRAIL_TYPE BWMFI_TrailingProfitMethod;
+  double BWMFI_SignalOpenLevel;
+  long BWMFI_SignalBaseMethod;
+  long BWMFI_SignalOpenMethod1;
+  long BWMFI_SignalOpenMethod2;
+  double BWMFI_SignalCloseLevel;
+  ENUM_MARKET_EVENT BWMFI_SignalCloseMethod1;
+  ENUM_MARKET_EVENT BWMFI_SignalCloseMethod2;
+  double BWMFI_MaxSpread;
+
+  // Constructor: Set default param values.
+  Stg_BWMFI_Params()
+      : BWMFI_Shift(::BWMFI_Shift),
+        BWMFI_TrailingStopMethod(::BWMFI_TrailingStopMethod),
+        BWMFI_TrailingProfitMethod(::BWMFI_TrailingProfitMethod),
+        BWMFI_SignalOpenLevel(::BWMFI_SignalOpenLevel),
+        BWMFI_SignalBaseMethod(::BWMFI_SignalBaseMethod),
+        BWMFI_SignalOpenMethod1(::BWMFI_SignalOpenMethod1),
+        BWMFI_SignalOpenMethod2(::BWMFI_SignalOpenMethod2),
+        BWMFI_SignalCloseLevel(::BWMFI_SignalCloseLevel),
+        BWMFI_SignalCloseMethod1(::BWMFI_SignalCloseMethod1),
+        BWMFI_SignalCloseMethod2(::BWMFI_SignalCloseMethod2),
+        BWMFI_MaxSpread(::BWMFI_MaxSpread) {}
+};
+
+// Loads pair specific param values.
+#include "sets/EURUSD_H1.h"
+#include "sets/EURUSD_H4.h"
+#include "sets/EURUSD_M1.h"
+#include "sets/EURUSD_M15.h"
+#include "sets/EURUSD_M30.h"
+#include "sets/EURUSD_M5.h"
 
 class Stg_BWMFI : public Strategy {
+ public:
+  Stg_BWMFI(StgParams &_params, string _name) : Strategy(_params, _name) {}
 
-  public:
-
-  void Stg_BWMFI(StgParams &_params, string _name) : Strategy(_params, _name) {}
-
-  static Stg_BWMFI *Init_M1() {
-    ChartParams cparams1(PERIOD_M1);
-    IndicatorParams bwmfi_iparams(10, INDI_BWMFI);
-    StgParams bwmfi1_sparams(new Trade(PERIOD_M1, _Symbol), new Indi_BWMFI(bwmfi_iparams, cparams1), NULL, NULL);
-    bwmfi1_sparams.SetSignals(BWMFI1_SignalMethod, BWMFI1_OpenCondition1, BWMFI1_OpenCondition2, BWMFI1_CloseCondition, NULL, BWMFI_SignalLevel, NULL);
-    bwmfi1_sparams.SetStops(BWMFI_TrailingProfitMethod, BWMFI_TrailingStopMethod);
-    bwmfi1_sparams.SetMaxSpread(BWMFI1_MaxSpread);
-    bwmfi1_sparams.SetId(BWMFI1);
-    return (new Stg_BWMFI(bwmfi1_sparams, "BWMFI1"));
-  }
-  static Stg_BWMFI *Init_M5() {
-    ChartParams cparams5(PERIOD_M5);
-    IndicatorParams bwmfi_iparams(10, INDI_BWMFI);
-    StgParams bwmfi5_sparams(new Trade(PERIOD_M5, _Symbol), new Indi_BWMFI(bwmfi_iparams, cparams5), NULL, NULL);
-    bwmfi5_sparams.SetSignals(BWMFI5_SignalMethod, BWMFI5_OpenCondition1, BWMFI5_OpenCondition2, BWMFI5_CloseCondition, NULL, BWMFI_SignalLevel, NULL);
-    bwmfi5_sparams.SetStops(BWMFI_TrailingProfitMethod, BWMFI_TrailingStopMethod);
-    bwmfi5_sparams.SetMaxSpread(BWMFI5_MaxSpread);
-    bwmfi5_sparams.SetId(BWMFI5);
-    return (new Stg_BWMFI(bwmfi5_sparams, "BWMFI5"));
-  }
-  static Stg_BWMFI *Init_M15() {
-    ChartParams cparams15(PERIOD_M15);
-    IndicatorParams bwmfi_iparams(10, INDI_BWMFI);
-    StgParams bwmfi15_sparams(new Trade(PERIOD_M15, _Symbol), new Indi_BWMFI(bwmfi_iparams, cparams15), NULL, NULL);
-    bwmfi15_sparams.SetSignals(BWMFI15_SignalMethod, BWMFI15_OpenCondition1, BWMFI15_OpenCondition2, BWMFI15_CloseCondition, NULL, BWMFI_SignalLevel, NULL);
-    bwmfi15_sparams.SetStops(BWMFI_TrailingProfitMethod, BWMFI_TrailingStopMethod);
-    bwmfi15_sparams.SetMaxSpread(BWMFI15_MaxSpread);
-    bwmfi15_sparams.SetId(BWMFI15);
-    return (new Stg_BWMFI(bwmfi15_sparams, "BWMFI15"));
-  }
-  static Stg_BWMFI *Init_M30() {
-    ChartParams cparams30(PERIOD_M30);
-    IndicatorParams bwmfi_iparams(10, INDI_BWMFI);
-    StgParams bwmfi30_sparams(new Trade(PERIOD_M30, _Symbol), new Indi_BWMFI(bwmfi_iparams, cparams30), NULL, NULL);
-    bwmfi30_sparams.SetSignals(BWMFI30_SignalMethod, BWMFI30_OpenCondition1, BWMFI30_OpenCondition2, BWMFI30_CloseCondition, NULL, BWMFI_SignalLevel, NULL);
-    bwmfi30_sparams.SetStops(BWMFI_TrailingProfitMethod, BWMFI_TrailingStopMethod);
-    bwmfi30_sparams.SetMaxSpread(BWMFI30_MaxSpread);
-    bwmfi30_sparams.SetId(BWMFI30);
-    return (new Stg_BWMFI(bwmfi30_sparams, "BWMFI30"));
-  }
-  static Stg_BWMFI *Init(ENUM_TIMEFRAMES _tf) {
+  static Stg_BWMFI *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
+    // Initialize strategy initial values.
+    Stg_BWMFI_Params _params;
     switch (_tf) {
-      case PERIOD_M1:  return Init_M1();
-      case PERIOD_M5:  return Init_M5();
-      case PERIOD_M15: return Init_M15();
-      case PERIOD_M30: return Init_M30();
-      default: return NULL;
+      case PERIOD_M1: {
+        Stg_BWMFI_EURUSD_M1_Params _new_params;
+        _params = _new_params;
+      }
+      case PERIOD_M5: {
+        Stg_BWMFI_EURUSD_M5_Params _new_params;
+        _params = _new_params;
+      }
+      case PERIOD_M15: {
+        Stg_BWMFI_EURUSD_M15_Params _new_params;
+        _params = _new_params;
+      }
+      case PERIOD_M30: {
+        Stg_BWMFI_EURUSD_M30_Params _new_params;
+        _params = _new_params;
+      }
+      case PERIOD_H1: {
+        Stg_BWMFI_EURUSD_H1_Params _new_params;
+        _params = _new_params;
+      }
+      case PERIOD_H4: {
+        Stg_BWMFI_EURUSD_H4_Params _new_params;
+        _params = _new_params;
+      }
     }
+    // Initialize strategy parameters.
+    ChartParams cparams(_tf);
+    IndicatorParams bwmfi_iparams(10, INDI_BWMFI);
+    StgParams sparams(new Trade(_tf, _Symbol), new Indi_BWMFI(bwmfi_iparams, cparams), NULL, NULL);
+    sparams.logger.SetLevel(_log_level);
+    sparams.SetMagicNo(_magic_no);
+    sparams.SetSignals(_params.BWMFI_SignalBaseMethod, _params.BWMFI_SignalOpenMethod1, _params.BWMFI_SignalOpenMethod2,
+                       _params.BWMFI_SignalCloseMethod1, _params.BWMFI_SignalCloseMethod2,
+                       _params.BWMFI_SignalOpenLevel, _params.BWMFI_SignalCloseLevel);
+    sparams.SetStops(_params.BWMFI_TrailingProfitMethod, _params.BWMFI_TrailingStopMethod);
+    sparams.SetMaxSpread(_params.BWMFI_MaxSpread);
+    // Initialize strategy instance.
+    Strategy *_strat = new Stg_BWMFI(sparams, "BWMFI");
+    return _strat;
   }
 
   /**
-   * Check if BWMFI indicator is on buy or sell.
-   *
-   * @param
-   *   cmd (int) - type of trade order command
-   *   period (int) - period to check for
-   *   _signal_method (int) - signal method to use by using bitwise AND operation
-   *   _signal_level1 (double) - signal level to consider the signal
+   * Check strategy's opening signal.
    */
-  bool SignalOpen(ENUM_ORDER_TYPE cmd, long _signal_method = EMPTY, double _signal_level1 = EMPTY, double _signal_level2 = EMPTY) {
+  bool SignalOpen(ENUM_ORDER_TYPE _cmd, long _signal_method = EMPTY, double _signal_level = EMPTY) {
     bool _result = false;
-    double bwmfi_0 = ((Indi_BWMFI *) this.Data()).GetValue(0);
-    double bwmfi_1 = ((Indi_BWMFI *) this.Data()).GetValue(1);
-    double bwmfi_2 = ((Indi_BWMFI *) this.Data()).GetValue(2);
+    double bwmfi_0 = ((Indi_BWMFI *)this.Data()).GetValue(0);
+    double bwmfi_1 = ((Indi_BWMFI *)this.Data()).GetValue(1);
+    double bwmfi_2 = ((Indi_BWMFI *)this.Data()).GetValue(2);
     if (_signal_method == EMPTY) _signal_method = GetSignalBaseMethod();
-    if (_signal_level1 == EMPTY) _signal_level1 = GetSignalLevel1();
-    if (_signal_level2 == EMPTY) _signal_level2 = GetSignalLevel2();
-    switch (cmd) {
+    if (_signal_level == EMPTY) _signal_level = GetSignalOpenLevel();
+    switch (_cmd) {
       case ORDER_TYPE_BUY:
         /*
           bool _result = BWMFI_0[LINE_LOWER] != 0.0 || BWMFI_1[LINE_LOWER] != 0.0 || BWMFI_2[LINE_LOWER] != 0.0;
           if (METHOD(_signal_method, 0)) _result &= Open[CURR] > Close[CURR];
         */
-      break;
+        break;
       case ORDER_TYPE_SELL:
         /*
           bool _result = BWMFI_0[LINE_UPPER] != 0.0 || BWMFI_1[LINE_UPPER] != 0.0 || BWMFI_2[LINE_UPPER] != 0.0;
           if (METHOD(_signal_method, 0)) _result &= Open[CURR] < Close[CURR];
         */
-      break;
+        break;
     }
-    _result &= _signal_method <= 0 || Convert::ValueToOp(curr_trend) == cmd;
     return _result;
   }
 
+  /**
+   * Check strategy's closing signal.
+   */
+  bool SignalClose(ENUM_ORDER_TYPE _cmd, long _signal_method = EMPTY, double _signal_level = EMPTY) {
+    if (_signal_level == EMPTY) _signal_level = GetSignalCloseLevel();
+    return SignalOpen(Order::NegateOrderType(_cmd), _signal_method, _signal_level);
+  }
 };
