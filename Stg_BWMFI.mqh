@@ -15,12 +15,11 @@
 
 // User input params.
 INPUT string __BWMFI_Parameters__ = "-- BWMFI strategy params --";  // >>> BWMFI <<<
-INPUT double BWMFI_SignalOpenLevel = 0.00000000;                    // Signal open level
 INPUT int BWMFI_Shift = 0;                                          // Shift (relative to the current bar, 0 - default)
-INPUT double BWMFI_SignalOpenLevel = 0.0004;                        // Signal open level (>0.0001)
 INPUT int BWMFI_SignalOpenMethod = 0;                               // Signal open method (0-1)
-INPUT double BWMFI_SignalCloseLevel = 0.0004;                       // Signal close level (>0.0001)
+INPUT double BWMFI_SignalOpenLevel = 0.0004;                        // Signal open level (>0.0001)
 INPUT int BWMFI_SignalCloseMethod = 0;                              // Signal close method
+INPUT double BWMFI_SignalCloseLevel = 0.0004;                       // Signal close level (>0.0001)
 INPUT int BWMFI_PriceLimitMethod = 0;                               // Price limit method
 INPUT double BWMFI_PriceLimitLevel = 0;                             // Price limit level
 INPUT double BWMFI_MaxSpread = 6.0;                                 // Max spread to trade (pips)
