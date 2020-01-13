@@ -10,15 +10,12 @@ struct Stg_BWMFI_EURUSD_H1_Params : Stg_BWMFI_Params {
     symbol = "EURUSD";
     tf = PERIOD_H1;
     BWMFI_Shift = 0;
-    BWMFI_TrailingStopMethod = 0;
-    BWMFI_TrailingProfitMethod = 0;
+    BWMFI_SignalOpenMethod = 0;
     BWMFI_SignalOpenLevel = 0;
-    BWMFI_SignalBaseMethod = 0;
-    BWMFI_SignalOpenMethod1 = 0;
-    BWMFI_SignalOpenMethod2 = 0;
+    BWMFI_SignalCloseMethod = 0;
     BWMFI_SignalCloseLevel = 0;
-    BWMFI_SignalCloseMethod1 = 0;
-    BWMFI_SignalCloseMethod2 = 0;
+    BWMFI_PriceLimitMethod = 0;
+    BWMFI_PriceLimitLevel = 0;
     BWMFI_MaxSpread = 0;
   }
 };

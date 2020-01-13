@@ -15,45 +15,36 @@
 
 // User input params.
 INPUT string __BWMFI_Parameters__ = "-- BWMFI strategy params --";  // >>> BWMFI <<<
-INPUT int BWMFI_Active_Tf = 0;  // Activated timeframes (1-255) [M1=1,M5=2,M15=4,M30=8,H1=16,H2=32,H4=64...]
-INPUT ENUM_TRAIL_TYPE BWMFI_TrailingStopMethod = 22;   // Trail stop method
-INPUT ENUM_TRAIL_TYPE BWMFI_TrailingProfitMethod = 1;  // Trail profit method
-INPUT double BWMFI_SignalOpenLevel = 0.00000000;       // Signal open level
-INPUT int BWMFI_Shift = 0;                             // Shift (relative to the current bar, 0 - default)
-INPUT int BWMFI_SignalBaseMethod = 0;                  // Signal base method (0-
-INPUT int BWMFI_SignalOpenMethod1 = 0;                 // Open condition 1 (0-1023)
-INPUT int BWMFI_SignalOpenMethod2 = 0;                 // Open condition 2 (0-)
-INPUT double BWMFI_SignalCloseLevel = 0.00000000;      // Signal close level
-INPUT ENUM_MARKET_EVENT BWMFI_SignalCloseMethod1 = C_BWMFI_BUY_SELL;  // Close condition 1
-INPUT ENUM_MARKET_EVENT BWMFI_SignalCloseMethod2 = C_BWMFI_BUY_SELL;  // Close condition 2
-INPUT double BWMFI_MaxSpread = 6.0;                                   // Max spread to trade (pips)
+INPUT double BWMFI_SignalOpenLevel = 0.00000000;                    // Signal open level
+INPUT int BWMFI_Shift = 0;                                          // Shift (relative to the current bar, 0 - default)
+INPUT double BWMFI_SignalOpenLevel = 0.0004;                        // Signal open level (>0.0001)
+INPUT int BWMFI_SignalOpenMethod = 0;                               // Signal open method (0-1)
+INPUT double BWMFI_SignalCloseLevel = 0.0004;                       // Signal close level (>0.0001)
+INPUT int BWMFI_SignalCloseMethod = 0;                              // Signal close method
+INPUT int BWMFI_PriceLimitMethod = 0;                               // Price limit method
+INPUT double BWMFI_PriceLimitLevel = 0;                             // Price limit level
+INPUT double BWMFI_MaxSpread = 6.0;                                 // Max spread to trade (pips)
 
 // Struct to define strategy parameters to override.
 struct Stg_BWMFI_Params : Stg_Params {
   int BWMFI_Shift;
-  ENUM_TRAIL_TYPE BWMFI_TrailingStopMethod;
-  ENUM_TRAIL_TYPE BWMFI_TrailingProfitMethod;
+  int BWMFI_SignalOpenMethod;
   double BWMFI_SignalOpenLevel;
-  long BWMFI_SignalBaseMethod;
-  long BWMFI_SignalOpenMethod1;
-  long BWMFI_SignalOpenMethod2;
+  int BWMFI_SignalCloseMethod;
   double BWMFI_SignalCloseLevel;
-  ENUM_MARKET_EVENT BWMFI_SignalCloseMethod1;
-  ENUM_MARKET_EVENT BWMFI_SignalCloseMethod2;
+  int BWMFI_PriceLimitMethod;
+  double BWMFI_PriceLimitLevel;
   double BWMFI_MaxSpread;
 
   // Constructor: Set default param values.
   Stg_BWMFI_Params()
       : BWMFI_Shift(::BWMFI_Shift),
-        BWMFI_TrailingStopMethod(::BWMFI_TrailingStopMethod),
-        BWMFI_TrailingProfitMethod(::BWMFI_TrailingProfitMethod),
+        BWMFI_SignalOpenMethod(::BWMFI_SignalOpenMethod),
         BWMFI_SignalOpenLevel(::BWMFI_SignalOpenLevel),
-        BWMFI_SignalBaseMethod(::BWMFI_SignalBaseMethod),
-        BWMFI_SignalOpenMethod1(::BWMFI_SignalOpenMethod1),
-        BWMFI_SignalOpenMethod2(::BWMFI_SignalOpenMethod2),
+        BWMFI_SignalCloseMethod(::BWMFI_SignalCloseMethod),
         BWMFI_SignalCloseLevel(::BWMFI_SignalCloseLevel),
-        BWMFI_SignalCloseMethod1(::BWMFI_SignalCloseMethod1),
-        BWMFI_SignalCloseMethod2(::BWMFI_SignalCloseMethod2),
+        BWMFI_PriceLimitMethod(::BWMFI_PriceLimitMethod),
+        BWMFI_PriceLimitLevel(::BWMFI_PriceLimitLevel),
         BWMFI_MaxSpread(::BWMFI_MaxSpread) {}
 };
 
@@ -104,10 +95,8 @@ class Stg_BWMFI : public Strategy {
     StgParams sparams(new Trade(_tf, _Symbol), new Indi_BWMFI(bwmfi_iparams, cparams), NULL, NULL);
     sparams.logger.SetLevel(_log_level);
     sparams.SetMagicNo(_magic_no);
-    sparams.SetSignals(_params.BWMFI_SignalBaseMethod, _params.BWMFI_SignalOpenMethod1, _params.BWMFI_SignalOpenMethod2,
-                       _params.BWMFI_SignalCloseMethod1, _params.BWMFI_SignalCloseMethod2,
-                       _params.BWMFI_SignalOpenLevel, _params.BWMFI_SignalCloseLevel);
-    sparams.SetStops(_params.BWMFI_TrailingProfitMethod, _params.BWMFI_TrailingStopMethod);
+    sparams.SetSignals(_params.BWMFI_SignalOpenMethod, _params.BWMFI_SignalOpenLevel, _params.BWMFI_SignalCloseMethod,
+                       _params.BWMFI_SignalCloseLevel);
     sparams.SetMaxSpread(_params.BWMFI_MaxSpread);
     // Initialize strategy instance.
     Strategy *_strat = new Stg_BWMFI(sparams, "BWMFI");
@@ -117,24 +106,22 @@ class Stg_BWMFI : public Strategy {
   /**
    * Check strategy's opening signal.
    */
-  bool SignalOpen(ENUM_ORDER_TYPE _cmd, long _signal_method = EMPTY, double _signal_level = EMPTY) {
+  bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method = 0, double _level = 0.0) {
     bool _result = false;
     double bwmfi_0 = ((Indi_BWMFI *)this.Data()).GetValue(0);
     double bwmfi_1 = ((Indi_BWMFI *)this.Data()).GetValue(1);
     double bwmfi_2 = ((Indi_BWMFI *)this.Data()).GetValue(2);
-    if (_signal_method == EMPTY) _signal_method = GetSignalBaseMethod();
-    if (_signal_level == EMPTY) _signal_level = GetSignalOpenLevel();
     switch (_cmd) {
       case ORDER_TYPE_BUY:
         /*
           bool _result = BWMFI_0[LINE_LOWER] != 0.0 || BWMFI_1[LINE_LOWER] != 0.0 || BWMFI_2[LINE_LOWER] != 0.0;
-          if (METHOD(_signal_method, 0)) _result &= Open[CURR] > Close[CURR];
+          if (METHOD(_method, 0)) _result &= Open[CURR] > Close[CURR];
         */
         break;
       case ORDER_TYPE_SELL:
         /*
           bool _result = BWMFI_0[LINE_UPPER] != 0.0 || BWMFI_1[LINE_UPPER] != 0.0 || BWMFI_2[LINE_UPPER] != 0.0;
-          if (METHOD(_signal_method, 0)) _result &= Open[CURR] < Close[CURR];
+          if (METHOD(_method, 0)) _result &= Open[CURR] < Close[CURR];
         */
         break;
     }
@@ -144,8 +131,23 @@ class Stg_BWMFI : public Strategy {
   /**
    * Check strategy's closing signal.
    */
-  bool SignalClose(ENUM_ORDER_TYPE _cmd, long _signal_method = EMPTY, double _signal_level = EMPTY) {
-    if (_signal_level == EMPTY) _signal_level = GetSignalCloseLevel();
-    return SignalOpen(Order::NegateOrderType(_cmd), _signal_method, _signal_level);
+  bool SignalClose(ENUM_ORDER_TYPE _cmd, int _method = 0, double _level = 0.0) {
+    return SignalOpen(Order::NegateOrderType(_cmd), _method, _level);
+  }
+
+  /**
+   * Gets price limit value for profit take or stop loss.
+   */
+  double PriceLimit(ENUM_ORDER_TYPE _cmd, ENUM_STG_PRICE_LIMIT_MODE _mode, int _method = 0, double _level = 0.0) {
+    double _trail = _level * Market().GetPipSize();
+    int _direction = Order::OrderDirection(_cmd) * (_mode == LIMIT_VALUE_STOP ? -1 : 1);
+    double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
+    double _result = _default_value;
+    switch (_method) {
+      case 0: {
+        // @todo
+      }
+    }
+    return _result;
   }
 };
