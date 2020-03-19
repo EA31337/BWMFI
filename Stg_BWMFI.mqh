@@ -16,12 +16,12 @@
 // User input params.
 INPUT string __BWMFI_Parameters__ = "-- BWMFI strategy params --";  // >>> BWMFI <<<
 INPUT int BWMFI_Shift = 0;                                          // Shift (relative to the current bar, 0 - default)
-INPUT int BWMFI_SignalOpenMethod = 0;                               // Signal open method (0-1)
-INPUT double BWMFI_SignalOpenLevel = 0.0004;                        // Signal open level (>0.0001)
+INPUT int BWMFI_SignalOpenMethod = 0;                               // Signal open method
+INPUT double BWMFI_SignalOpenLevel = 0;                             // Signal open level
 INPUT int BWMFI_SignalOpenFilterMethod = 0;                         // Signal open filter method
 INPUT int BWMFI_SignalOpenBoostMethod = 0;                          // Signal open boost method
 INPUT int BWMFI_SignalCloseMethod = 0;                              // Signal close method
-INPUT double BWMFI_SignalCloseLevel = 0.0004;                       // Signal close level (>0.0001)
+INPUT double BWMFI_SignalCloseLevel = 0;                            // Signal close level
 INPUT int BWMFI_PriceLimitMethod = 0;                               // Price limit method
 INPUT double BWMFI_PriceLimitLevel = 0;                             // Price limit level
 INPUT double BWMFI_MaxSpread = 6.0;                                 // Max spread to trade (pips)
@@ -90,22 +90,37 @@ class Stg_BWMFI : public Strategy {
    * Check strategy's opening signal.
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method = 0, double _level = 0.0) {
-    bool _result = false;
-    double bwmfi_0 = ((Indi_BWMFI *)this.Data()).GetValue(0);
-    double bwmfi_1 = ((Indi_BWMFI *)this.Data()).GetValue(1);
-    double bwmfi_2 = ((Indi_BWMFI *)this.Data()).GetValue(2);
+    Chart *_chart = Chart();
+    Indicator *_indi = Data();
+    bool _is_valid = _indi[CURR].IsValid() && _indi[PREV].IsValid() && _indi[PPREV].IsValid();
+    bool _result = _is_valid;
+    if (!_result) {
+      // Returns false when indicator data is not valid.
+      return false;
+    }
+    double level = _level * Chart().GetPipSize();
     switch (_cmd) {
       case ORDER_TYPE_BUY:
-        /*
-          bool _result = BWMFI_0[LINE_LOWER] != 0.0 || BWMFI_1[LINE_LOWER] != 0.0 || BWMFI_2[LINE_LOWER] != 0.0;
-          if (METHOD(_method, 0)) _result &= Open[CURR] > Close[CURR];
-        */
+        _result &= fabs(_indi[CURR].value[BWMFI_BUFFER] - _indi[PREV].value[BWMFI_BUFFER]) > _level;
+        if (METHOD(_method, 0)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        if (METHOD(_method, 1)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+        if (METHOD(_method, 2)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+        if (METHOD(_method, 3)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+        if (METHOD(_method, 4)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        if (METHOD(_method, 5)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+        if (METHOD(_method, 6)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+        if (METHOD(_method, 7)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
         break;
       case ORDER_TYPE_SELL:
-        /*
-          bool _result = BWMFI_0[LINE_UPPER] != 0.0 || BWMFI_1[LINE_UPPER] != 0.0 || BWMFI_2[LINE_UPPER] != 0.0;
-          if (METHOD(_method, 0)) _result &= Open[CURR] < Close[CURR];
-        */
+        _result &= fabs(_indi[CURR].value[BWMFI_BUFFER] - _indi[PREV].value[BWMFI_BUFFER]) > _level;
+        if (METHOD(_method, 0)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        if (METHOD(_method, 1)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+        if (METHOD(_method, 2)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+        if (METHOD(_method, 3)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+        if (METHOD(_method, 4)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        if (METHOD(_method, 5)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+        if (METHOD(_method, 6)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+        if (METHOD(_method, 7)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
         break;
     }
     return _result;
@@ -155,7 +170,7 @@ class Stg_BWMFI : public Strategy {
    */
   double PriceLimit(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, double _level = 0.0) {
     double _trail = _level * Market().GetPipSize();
-    int _direction = Order::OrderDirection(_cmd) * (_mode == ORDER_TYPE_SL ? -1 : 1);
+    int _direction = Order::OrderDirection(_cmd, _mode);
     double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
     double _result = _default_value;
     switch (_method) {
