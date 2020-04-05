@@ -80,6 +80,7 @@ class Stg_BWMFI : public Strategy {
     sparams.SetSignals(_params.BWMFI_SignalOpenMethod, _params.BWMFI_SignalOpenLevel,
                        _params.BWMFI_SignalOpenFilterMethod, _params.BWMFI_SignalOpenBoostMethod,
                        _params.BWMFI_SignalCloseMethod, _params.BWMFI_SignalCloseLevel);
+    sparams.SetPriceLimits(_params.BWMFI_PriceLimitMethod, _params.BWMFI_PriceLimitLevel);
     sparams.SetMaxSpread(_params.BWMFI_MaxSpread);
     // Initialize strategy instance.
     Strategy *_strat = new Stg_BWMFI(sparams, "BWMFI");
