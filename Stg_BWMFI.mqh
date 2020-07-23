@@ -75,7 +75,7 @@ class Stg_BWMFI : public Strategy {
     // Initialize strategy parameters.
     BWMFIParams bwmfi_params(_tf);
     StgParams sparams(new Trade(_tf, _Symbol), new Indi_BWMFI(bwmfi_params), NULL, NULL);
-    sparams.logger.SetLevel(_log_level);
+    sparams.logger.Ptr().SetLevel(_log_level);
     sparams.SetMagicNo(_magic_no);
     sparams.SetSignals(_params.BWMFI_SignalOpenMethod, _params.BWMFI_SignalOpenLevel,
                        _params.BWMFI_SignalOpenFilterMethod, _params.BWMFI_SignalOpenBoostMethod,
