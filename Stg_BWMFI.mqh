@@ -6,14 +6,14 @@
 // User input params.
 INPUT int BWMFI_Shift = 0;                   // Shift (relative to the current bar, 0 - default)
 INPUT int BWMFI_SignalOpenMethod = 0;        // Signal open method
-INPUT float BWMFI_SignalOpenLevel = 0;      // Signal open level
+INPUT float BWMFI_SignalOpenLevel = 0;       // Signal open level
 INPUT int BWMFI_SignalOpenFilterMethod = 0;  // Signal open filter method
 INPUT int BWMFI_SignalOpenBoostMethod = 0;   // Signal open boost method
 INPUT int BWMFI_SignalCloseMethod = 0;       // Signal close method
-INPUT float BWMFI_SignalCloseLevel = 0;     // Signal close level
+INPUT float BWMFI_SignalCloseLevel = 0;      // Signal close level
 INPUT int BWMFI_PriceLimitMethod = 0;        // Price limit method
-INPUT float BWMFI_PriceLimitLevel = 0;      // Price limit level
-INPUT float BWMFI_MaxSpread = 6.0;          // Max spread to trade (pips)
+INPUT float BWMFI_PriceLimitLevel = 0;       // Price limit level
+INPUT float BWMFI_MaxSpread = 6.0;           // Max spread to trade (pips)
 
 // Includes.
 #include <EA31337-classes/Indicators/Indi_BWMFI.mqh>
@@ -23,14 +23,14 @@ INPUT float BWMFI_MaxSpread = 6.0;          // Max spread to trade (pips)
 struct Stg_BWMFI_Params : StgParams {
   int BWMFI_Shift;
   int BWMFI_SignalOpenMethod;
-  double BWMFI_SignalOpenLevel;
+  float BWMFI_SignalOpenLevel;
   int BWMFI_SignalOpenFilterMethod;
   int BWMFI_SignalOpenBoostMethod;
   int BWMFI_SignalCloseMethod;
-  double BWMFI_SignalCloseLevel;
+  float BWMFI_SignalCloseLevel;
   int BWMFI_PriceLimitMethod;
-  double BWMFI_PriceLimitLevel;
-  double BWMFI_MaxSpread;
+  float BWMFI_PriceLimitLevel;
+  float BWMFI_MaxSpread;
 
   // Constructor: Set default param values.
   Stg_BWMFI_Params()
@@ -143,6 +143,6 @@ class Stg_BWMFI : public Strategy {
         break;
       }
     }
-    return _result;
+    return (float)_result;
   }
 };
