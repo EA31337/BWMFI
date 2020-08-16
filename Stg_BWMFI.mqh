@@ -3,8 +3,12 @@
  * Implements BWMFI strategy based on the Market Facilitation Index indicator
  */
 
+// Includes.
+#include <EA31337-classes/Indicators/Indi_BWMFI.mqh>
+#include <EA31337-classes/Strategy.mqh>
+
 // User input params.
-INPUT int BWMFI_Shift = 0;                   // Shift (relative to the current bar, 0 - default)
+INPUT float BWMFI_LotSize = 0;               // Lot size
 INPUT int BWMFI_SignalOpenMethod = 0;        // Signal open method
 INPUT float BWMFI_SignalOpenLevel = 0;       // Signal open level
 INPUT int BWMFI_SignalOpenFilterMethod = 0;  // Signal open filter method
@@ -13,42 +17,33 @@ INPUT int BWMFI_SignalCloseMethod = 0;       // Signal close method
 INPUT float BWMFI_SignalCloseLevel = 0;      // Signal close level
 INPUT int BWMFI_PriceLimitMethod = 0;        // Price limit method
 INPUT float BWMFI_PriceLimitLevel = 0;       // Price limit level
+INPUT int BWMFI_TickFilterMethod = 0;        // Tick filter method
 INPUT float BWMFI_MaxSpread = 6.0;           // Max spread to trade (pips)
+INPUT int BWMFI_Shift = 0;                   // Shift (relative to the current bar, 0 - default)
 
-// Includes.
-#include <EA31337-classes/Indicators/Indi_BWMFI.mqh>
-#include <EA31337-classes/Strategy.mqh>
+// Structs.
+
+// Defines struct with default user strategy values.
+struct Stg_BWMFI_Params_Defaults : StgParams {
+  Stg_BWMFI_Params_Defaults()
+      : StgParams(::BWMFI_SignalOpenMethod, ::BWMFI_SignalOpenFilterMethod, ::BWMFI_SignalOpenLevel,
+                  ::BWMFI_SignalOpenBoostMethod, ::BWMFI_SignalCloseMethod, ::BWMFI_SignalCloseLevel,
+                  ::BWMFI_PriceLimitMethod, ::BWMFI_PriceLimitLevel, ::BWMFI_TickFilterMethod, ::BWMFI_MaxSpread,
+                  ::BWMFI_Shift) {}
+} stg_bwmfi_defaults;
 
 // Struct to define strategy parameters to override.
 struct Stg_BWMFI_Params : StgParams {
-  int BWMFI_Shift;
-  int BWMFI_SignalOpenMethod;
-  float BWMFI_SignalOpenLevel;
-  int BWMFI_SignalOpenFilterMethod;
-  int BWMFI_SignalOpenBoostMethod;
-  int BWMFI_SignalCloseMethod;
-  float BWMFI_SignalCloseLevel;
-  int BWMFI_PriceLimitMethod;
-  float BWMFI_PriceLimitLevel;
-  float BWMFI_MaxSpread;
+  StgParams sparams;
 
-  // Constructor: Set default param values.
-  Stg_BWMFI_Params()
-      : BWMFI_Shift(::BWMFI_Shift),
-        BWMFI_SignalOpenMethod(::BWMFI_SignalOpenMethod),
-        BWMFI_SignalOpenLevel(::BWMFI_SignalOpenLevel),
-        BWMFI_SignalOpenFilterMethod(::BWMFI_SignalOpenFilterMethod),
-        BWMFI_SignalOpenBoostMethod(::BWMFI_SignalOpenBoostMethod),
-        BWMFI_SignalCloseMethod(::BWMFI_SignalCloseMethod),
-        BWMFI_SignalCloseLevel(::BWMFI_SignalCloseLevel),
-        BWMFI_PriceLimitMethod(::BWMFI_PriceLimitMethod),
-        BWMFI_PriceLimitLevel(::BWMFI_PriceLimitLevel),
-        BWMFI_MaxSpread(::BWMFI_MaxSpread) {}
+  // Struct constructors.
+  Stg_BWMFI_Params(StgParams &_sparams) : sparams(stg_bwmfi_defaults) { sparams = _sparams; }
 };
 
 // Loads pair specific param values.
 #include "sets/EURUSD_H1.h"
 #include "sets/EURUSD_H4.h"
+#include "sets/EURUSD_H8.h"
 #include "sets/EURUSD_M1.h"
 #include "sets/EURUSD_M15.h"
 #include "sets/EURUSD_M30.h"
@@ -60,23 +55,21 @@ class Stg_BWMFI : public Strategy {
 
   static Stg_BWMFI *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
     // Initialize strategy initial values.
-    Stg_BWMFI_Params _params;
+    StgParams _stg_params(stg_bwmfi_defaults);
     if (!Terminal::IsOptimization()) {
-      SetParamsByTf<Stg_BWMFI_Params>(_params, _tf, stg_bwmfi_m1, stg_bwmfi_m5, stg_bwmfi_m15, stg_bwmfi_m30,
-                                      stg_bwmfi_h1, stg_bwmfi_h4, stg_bwmfi_h4);
+      SetParamsByTf<StgParams>(_stg_params, _tf, stg_bwmfi_m1, stg_bwmfi_m5, stg_bwmfi_m15, stg_bwmfi_m30, stg_bwmfi_h1,
+                               stg_bwmfi_h4, stg_bwmfi_h8);
     }
+    // Initialize indicator.
+    BWMFIParams _indi_params(_tf);
+    _stg_params.SetIndicator(new Indi_BWMFI(_indi_params));
     // Initialize strategy parameters.
-    BWMFIParams bwmfi_params(_tf);
-    StgParams sparams(new Trade(_tf, _Symbol), new Indi_BWMFI(bwmfi_params), NULL, NULL);
-    sparams.logger.Ptr().SetLevel(_log_level);
-    sparams.SetMagicNo(_magic_no);
-    sparams.SetSignals(_params.BWMFI_SignalOpenMethod, _params.BWMFI_SignalOpenLevel,
-                       _params.BWMFI_SignalOpenFilterMethod, _params.BWMFI_SignalOpenBoostMethod,
-                       _params.BWMFI_SignalCloseMethod, _params.BWMFI_SignalCloseLevel);
-    sparams.SetPriceLimits(_params.BWMFI_PriceLimitMethod, _params.BWMFI_PriceLimitLevel);
-    sparams.SetMaxSpread(_params.BWMFI_MaxSpread);
+    _stg_params.GetLog().SetLevel(_log_level);
+    _stg_params.SetMagicNo(_magic_no);
+    _stg_params.SetTf(_tf, _Symbol);
     // Initialize strategy instance.
-    Strategy *_strat = new Stg_BWMFI(sparams, "BWMFI");
+    Strategy *_strat = new Stg_BWMFI(_stg_params, "BWMFI");
+    _stg_params.SetStops(_strat, _strat);
     return _strat;
   }
 
@@ -131,15 +124,15 @@ class Stg_BWMFI : public Strategy {
     double _result = _default_value;
     switch (_method) {
       case 0: {
-        int _bar_count = (int)_level * 10;
-        _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count))
-                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count));
+        int _bar_count1 = (int)_level * 10;
+        _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count1))
+                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count1));
         break;
       }
       case 1: {
-        int _bar_count = (int)_level * 10;
-        _result = _direction < 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count))
-                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count));
+        int _bar_count2 = (int)_level * 10;
+        _result = _direction < 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count2))
+                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count2));
         break;
       }
     }
