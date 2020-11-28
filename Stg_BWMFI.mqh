@@ -122,13 +122,13 @@ class Stg_BWMFI : public Strategy {
     double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
     double _result = _default_value;
     switch (_method) {
-      case 0: {
+      case 1: {
         int _bar_count1 = (int)_level * 10;
         _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count1))
                                  : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count1));
         break;
       }
-      case 1: {
+      case 2: {
         int _bar_count2 = (int)_level * 10;
         _result = _direction < 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest(_bar_count2))
                                  : _indi.GetPrice(PRICE_LOW, _indi.GetLowest(_bar_count2));
