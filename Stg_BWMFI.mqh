@@ -87,26 +87,26 @@ class Stg_BWMFI : public Strategy {
     double level = _level * Chart().GetPipSize();
     switch (_cmd) {
       case ORDER_TYPE_BUY:
-        _result &= fabs(_indi[CURR].value[BWMFI_BUFFER] - _indi[PREV].value[BWMFI_BUFFER]) > _level;
-        if (METHOD(_method, 0)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (METHOD(_method, 1)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-        if (METHOD(_method, 2)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-        if (METHOD(_method, 3)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
-        if (METHOD(_method, 4)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (METHOD(_method, 5)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-        if (METHOD(_method, 6)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-        if (METHOD(_method, 7)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+        _result &= fabs(_indi[CURR][BWMFI_BUFFER] - _indi[PREV][BWMFI_BUFFER]) > _level;
+        if (METHOD(_method, 0)) _result &= _indi[CURR][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        if (METHOD(_method, 1)) _result &= _indi[CURR][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+        if (METHOD(_method, 2)) _result &= _indi[CURR][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+        if (METHOD(_method, 3)) _result &= _indi[CURR][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+        if (METHOD(_method, 4)) _result &= _indi[PREV][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        if (METHOD(_method, 5)) _result &= _indi[PREV][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+        if (METHOD(_method, 6)) _result &= _indi[PREV][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+        if (METHOD(_method, 7)) _result &= _indi[PREV][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
         break;
       case ORDER_TYPE_SELL:
-        _result &= fabs(_indi[CURR].value[BWMFI_BUFFER] - _indi[PREV].value[BWMFI_BUFFER]) > _level;
-        if (METHOD(_method, 0)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (METHOD(_method, 1)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-        if (METHOD(_method, 2)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-        if (METHOD(_method, 3)) _result &= _indi[CURR].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
-        if (METHOD(_method, 4)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (METHOD(_method, 5)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-        if (METHOD(_method, 6)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-        if (METHOD(_method, 7)) _result &= _indi[PREV].value[BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+        _result &= fabs(_indi[CURR][BWMFI_BUFFER] - _indi[PREV][BWMFI_BUFFER]) > _level;
+        if (METHOD(_method, 0)) _result &= _indi[CURR][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        if (METHOD(_method, 1)) _result &= _indi[CURR][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+        if (METHOD(_method, 2)) _result &= _indi[CURR][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+        if (METHOD(_method, 3)) _result &= _indi[CURR][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+        if (METHOD(_method, 4)) _result &= _indi[PREV][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        if (METHOD(_method, 5)) _result &= _indi[PREV][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+        if (METHOD(_method, 6)) _result &= _indi[PREV][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+        if (METHOD(_method, 7)) _result &= _indi[PREV][BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
         break;
     }
     return _result;
