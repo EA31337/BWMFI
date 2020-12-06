@@ -3,10 +3,6 @@
  * Implements BWMFI strategy based on the Market Facilitation Index indicator
  */
 
-// Includes.
-#include <EA31337-classes/Indicators/Indi_BWMFI.mqh>
-#include <EA31337-classes/Strategy.mqh>
-
 // User input params.
 INPUT float BWMFI_LotSize = 0;               // Lot size
 INPUT int BWMFI_SignalOpenMethod = 0;        // Signal open method
