@@ -78,7 +78,8 @@ class Stg_BWMFI : public Strategy {
     bool _is_valid = _indi[CURR].IsValid() && _indi[PREV].IsValid() && _indi[PPREV].IsValid();
     bool _result = _is_valid;
     if (_is_valid) {
-      double _change_pc = Math::ChangeInPct(_indi[2][(int)BWMFI_BUFFER], _indi[0][(int)BWMFI_BUFFER]);
+      double _change_pc =
+          Math::ChangeInPct(_indi[_shift + 2][(int)BWMFI_BUFFER], _indi[_shift][(int)BWMFI_BUFFER], true);
       switch (_cmd) {
         case ORDER_TYPE_BUY:
           _result &= _change_pc > _level;
@@ -92,7 +93,7 @@ class Stg_BWMFI : public Strategy {
           if (METHOD(_method, 7)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
           break;
         case ORDER_TYPE_SELL:
-          _result &= _change_pc < _level;
+          _result &= _change_pc < -_level;
           if (METHOD(_method, 0)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
           if (METHOD(_method, 1)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
           if (METHOD(_method, 2)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
@@ -111,8 +112,8 @@ class Stg_BWMFI : public Strategy {
    * Gets price stop value for profit take or stop loss.
    */
   float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
-    Indicator *_indi = Data();
     Chart *_chart = sparams.GetChart();
+    Indicator *_indi = Data();
     double _trail = _level * _chart.GetPipSize();
     int _bar_count = (int)_level * 10;
     int _direction = Order::OrderDirection(_cmd, _mode);
@@ -130,6 +131,7 @@ class Stg_BWMFI : public Strategy {
         _result = Math::ChangeByPct(_price_offer, (float)_change_pc / _level / 100);
         break;
     }
+    _result = +_trail;
     return (float)_result;
   }
 };
