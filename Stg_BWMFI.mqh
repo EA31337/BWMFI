@@ -16,7 +16,7 @@ INPUT float BWMFI_PriceStopLevel = 0;        // Price stop level
 INPUT int BWMFI_TickFilterMethod = 0;        // Tick filter method
 INPUT float BWMFI_MaxSpread = 6.0;           // Max spread to trade (pips)
 INPUT int BWMFI_Shift = 0;                   // Shift (relative to the current bar, 0 - default)
-INPUT int BWMFI_OrderCloseTime = -10;        // Order close time in mins (>0) or bars (<0)
+INPUT int BWMFI_OrderCloseTime = -20;        // Order close time in mins (>0) or bars (<0)
 
 // Structs.
 
@@ -77,34 +77,32 @@ class Stg_BWMFI : public Strategy {
     Indi_BWMFI *_indi = Data();
     bool _is_valid = _indi[CURR].IsValid() && _indi[PREV].IsValid() && _indi[PPREV].IsValid();
     bool _result = _is_valid;
-    if (!_result) {
-      // Returns false when indicator data is not valid.
-      return false;
-    }
-    double level = _level * Chart().GetPipSize();
-    switch (_cmd) {
-      case ORDER_TYPE_BUY:
-        _result &= fabs(_indi[CURR][(int)BWMFI_BUFFER] - _indi[PREV][(int)BWMFI_BUFFER]) > _level;
-        if (METHOD(_method, 0)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (METHOD(_method, 1)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-        if (METHOD(_method, 2)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-        if (METHOD(_method, 3)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
-        if (METHOD(_method, 4)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (METHOD(_method, 5)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-        if (METHOD(_method, 6)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-        if (METHOD(_method, 7)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
-        break;
-      case ORDER_TYPE_SELL:
-        _result &= fabs(_indi[CURR][(int)BWMFI_BUFFER] - _indi[PREV][(int)BWMFI_BUFFER]) > _level;
-        if (METHOD(_method, 0)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (METHOD(_method, 1)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-        if (METHOD(_method, 2)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-        if (METHOD(_method, 3)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
-        if (METHOD(_method, 4)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (METHOD(_method, 5)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-        if (METHOD(_method, 6)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-        if (METHOD(_method, 7)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
-        break;
+    if (_is_valid) {
+      double _change_pc = Math::ChangeInPct(_indi[2][(int)BWMFI_BUFFER], _indi[0][(int)BWMFI_BUFFER]);
+      switch (_cmd) {
+        case ORDER_TYPE_BUY:
+          _result &= _change_pc > _level;
+          if (METHOD(_method, 0)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+          if (METHOD(_method, 1)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+          if (METHOD(_method, 2)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+          if (METHOD(_method, 3)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+          if (METHOD(_method, 4)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+          if (METHOD(_method, 5)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+          if (METHOD(_method, 6)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+          if (METHOD(_method, 7)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+          break;
+        case ORDER_TYPE_SELL:
+          _result &= _change_pc < _level;
+          if (METHOD(_method, 0)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+          if (METHOD(_method, 1)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+          if (METHOD(_method, 2)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+          if (METHOD(_method, 3)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+          if (METHOD(_method, 4)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+          if (METHOD(_method, 5)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+          if (METHOD(_method, 6)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+          if (METHOD(_method, 7)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+          break;
+      }
     }
     return _result;
   }
@@ -113,24 +111,24 @@ class Stg_BWMFI : public Strategy {
    * Gets price stop value for profit take or stop loss.
    */
   float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
-    Indi_BWMFI *_indi = Data();
-    double _trail = _level * Market().GetPipSize();
+    Indicator *_indi = Data();
+    Chart *_chart = sparams.GetChart();
+    double _trail = _level * _chart.GetPipSize();
+    int _bar_count = (int)_level * 10;
     int _direction = Order::OrderDirection(_cmd, _mode);
-    double _default_value = Market().GetCloseOffer(_cmd) + _trail * _method * _direction;
+    double _change_pc = Math::ChangeInPct(_indi[1][0], _indi[0][0]);
+    double _default_value = _chart.GetCloseOffer(_cmd) + _trail * _method * _direction;
+    double _price_offer = _chart.GetOpenOffer(_cmd);
     double _result = _default_value;
+    ENUM_APPLIED_PRICE _ap = _direction > 0 ? PRICE_HIGH : PRICE_LOW;
     switch (_method) {
-      case 1: {
-        int _bar_count1 = (int)_level * 10;
-        _result = _direction > 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest<double>(_bar_count1))
-                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest<double>(_bar_count1));
+      case 1:
+        _result = _indi.GetPrice(
+            _ap, _direction > 0 ? _indi.GetHighest<double>(_bar_count) : _indi.GetLowest<double>(_bar_count));
         break;
-      }
-      case 2: {
-        int _bar_count2 = (int)_level * 10;
-        _result = _direction < 0 ? _indi.GetPrice(PRICE_HIGH, _indi.GetHighest<double>(_bar_count2))
-                                 : _indi.GetPrice(PRICE_LOW, _indi.GetLowest<double>(_bar_count2));
+      case 2:
+        _result = Math::ChangeByPct(_price_offer, (float)_change_pc / _level / 100);
         break;
-      }
     }
     return (float)_result;
   }
