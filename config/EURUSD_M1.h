@@ -13,7 +13,7 @@ struct Stg_BWMFI_Params_M1 : StgParams {
     signal_open_level = 10;
     signal_open_boost = 0;
     signal_close_method = 0;
-    signal_close_level = 40;
+    signal_close_level = 50;
     price_stop_method = 0;
     price_stop_level = 2;
     tick_filter_method = 1;
