@@ -6,9 +6,6 @@
 // Defines indicator's parameter values for the given pair symbol and timeframe.
 struct Indi_BWMFI_Params_{{ Timeframe }} : Indi_BWMFI_Params {
   Indi_BWMFI_Params_{{ Timeframe }}() : Indi_BWMFI_Params(indi_bwmfi_defaults, PERIOD_{{ Timeframe }}) {
-    applied_price = (ENUM_APPLIED_PRICE){{ BWMFI_Indi_BWMFI_Applied_Price | default(0) }};
-    ma_method = {{ BWMFI_Indi_BWMFI_MA_Method | default(0) }};
-    period = {{ BWMFI_Indi_BWMFI_Period | default(0) }};
     shift = {{ BWMFI_Shift | default(0) }};
   }
 } indi_bwmfi_{{ Timeframe | lower }};
