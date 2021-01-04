@@ -10,10 +10,10 @@ struct Stg_BWMFI_Params_M15 : StgParams {
     lot_size = 0;
     signal_open_method = 0;
     signal_open_filter = 27;
-    signal_open_level = 10;
+    signal_open_level = (float)10;
     signal_open_boost = 8;
     signal_close_method = 0;
-    signal_close_level = 40;
+    signal_close_level = (float)40;
     price_stop_method = 0;
     price_stop_level = 40;
     tick_filter_method = 1;
