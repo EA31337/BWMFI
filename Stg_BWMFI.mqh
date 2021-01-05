@@ -17,8 +17,16 @@ INPUT int BWMFI_TickFilterMethod = 1;        // Tick filter method
 INPUT float BWMFI_MaxSpread = 4.0;           // Max spread to trade (pips)
 INPUT int BWMFI_Shift = 0;                   // Shift (relative to the current bar, 0 - default)
 INPUT int BWMFI_OrderCloseTime = -20;        // Order close time in mins (>0) or bars (<0)
+INPUT string __BWMFI_Indi_BWMFI_Parameters__ =
+    "-- BWMFI strategy: BWMFI indicator params --";  // >>> BWMFI strategy: BWMFI indicator <<<
+INPUT int BWMFI_Indi_BWMFI_Shift = 0;                // Shift
 
 // Structs.
+
+// Defines struct with default user indicator values.
+struct Indi_BWMFI_Params_Defaults : BWMFIParams {
+  Indi_BWMFI_Params_Defaults() : BWMFIParams(::BWMFI_Indi_BWMFI_Shift) {}
+} indi_bwmfi_defaults;
 
 // Defines struct with default user strategy values.
 struct Stg_BWMFI_Params_Defaults : StgParams {

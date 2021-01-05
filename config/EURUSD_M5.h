@@ -4,8 +4,8 @@
  */
 
 // Defines indicator's parameter values for the given pair symbol and timeframe.
-struct Indi_BWMFI_Params_M5 : Indi_BWMFI_Params {
-  Indi_BWMFI_Params_M5() : Indi_BWMFI_Params(indi_bwmfi_defaults, PERIOD_M5) {
+struct Indi_BWMFI_Params_M5 : BWMFIParams {
+  Indi_BWMFI_Params_M5() : BWMFIParams(indi_bwmfi_defaults, PERIOD_M5) {
     shift = 0;
   }
 } indi_bwmfi_m5;
