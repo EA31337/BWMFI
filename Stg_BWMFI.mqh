@@ -139,7 +139,7 @@ class Stg_BWMFI : public Strategy {
         _result = Math::ChangeByPct(_price_offer, (float)_change_pc / _level / 100);
         break;
     }
-    _result = +_trail;
+    _result = _result > 0 ? _result + _trail : 0;
     return (float)_result;
   }
 };
