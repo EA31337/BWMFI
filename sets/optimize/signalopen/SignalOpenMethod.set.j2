@@ -1,6 +1,6 @@
 BWMFI_Indi_BWMFI_Applied_Price={{ applied_price | replace("(ENUM_APPLIED_PRICE)", "") | int | default(0) }}
 BWMFI_Indi_BWMFI_MA_Method={{ ma_method | default(0) }}
-BWMFI_Indi_BWMFI_Period={{ period | default(4) }}
+BWMFI_Indi_BWMFI_Period={{ (period | default(0) | int) }}
 BWMFI_Indi_BWMFI_Shift={{ shift | default(0) }}
 BWMFI_LotSize={{ lot_size | default(0) }}
 BWMFI_PriceStopLevel={{ price_stop_level | replace("(float)", "") | float | default(0) }}
