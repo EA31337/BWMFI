@@ -6,11 +6,11 @@
 // User input params.
 INPUT float BWMFI_LotSize = 0;               // Lot size
 INPUT int BWMFI_SignalOpenMethod = 0;        // Signal open method
-INPUT float BWMFI_SignalOpenLevel = 0.0f;    // Signal open level
+INPUT float BWMFI_SignalOpenLevel = 1.0f;    // Signal open level
 INPUT int BWMFI_SignalOpenFilterMethod = 1;  // Signal open filter method
 INPUT int BWMFI_SignalOpenBoostMethod = 0;   // Signal open boost method
 INPUT int BWMFI_SignalCloseMethod = 0;       // Signal close method
-INPUT float BWMFI_SignalCloseLevel = 0.0f;   // Signal close level
+INPUT float BWMFI_SignalCloseLevel = 1.0f;   // Signal close level
 INPUT int BWMFI_PriceStopMethod = 0;         // Price stop method
 INPUT float BWMFI_PriceStopLevel = 0;        // Price stop level
 INPUT int BWMFI_TickFilterMethod = 1;        // Tick filter method
@@ -86,30 +86,22 @@ class Stg_BWMFI : public Strategy {
     bool _is_valid = _indi[CURR].IsValid() && _indi[PREV].IsValid() && _indi[PPREV].IsValid();
     bool _result = _is_valid;
     if (_is_valid) {
-      double _change_pc =
-          Math::ChangeInPct(_indi[_shift + 2][(int)BWMFI_BUFFER], _indi[_shift][(int)BWMFI_BUFFER], true);
       switch (_cmd) {
         case ORDER_TYPE_BUY:
-          _result &= _change_pc > _level;
-          if (METHOD(_method, 0)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-          if (METHOD(_method, 1)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-          if (METHOD(_method, 2)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-          if (METHOD(_method, 3)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
-          if (METHOD(_method, 4)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-          if (METHOD(_method, 5)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-          if (METHOD(_method, 6)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-          if (METHOD(_method, 7)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+          _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+          _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+          if (_method == 1) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+          if (_method == 2) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+          if (_method == 3) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+          if (_method == 4) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
           break;
         case ORDER_TYPE_SELL:
-          _result &= _change_pc < -_level;
-          if (METHOD(_method, 0)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-          if (METHOD(_method, 1)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-          if (METHOD(_method, 2)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-          if (METHOD(_method, 3)) _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
-          if (METHOD(_method, 4)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-          if (METHOD(_method, 5)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-          if (METHOD(_method, 6)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-          if (METHOD(_method, 7)) _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+          _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+          _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+          if (_method == 1) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+          if (_method == 2) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
+          if (_method == 3) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
+          if (_method == 4) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
           break;
       }
     }
