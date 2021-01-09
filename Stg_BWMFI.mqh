@@ -86,8 +86,14 @@ class Stg_BWMFI : public Strategy {
     bool _is_valid = _indi[CURR].IsValid() && _indi[PREV].IsValid() && _indi[PPREV].IsValid();
     bool _result = _is_valid;
     if (_is_valid) {
+      // Green bar: MFI value and volume grow synchronously.
+      // Brown bar: occurs when the volume and indicator values fall simultaneously.
+      // Blue (false) bar: appears during the decrease in trading volume against the backdrop of the rising prices.
+      // Pink (squatting) bar: It appears most often at the end of a protracted trend.
       switch (_cmd) {
         case ORDER_TYPE_BUY:
+          // Buy: The appearance of three green bars in a row
+          // means that the market is overbought or oversold.
           _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
           _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
           if (_method == 1) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
@@ -96,6 +102,8 @@ class Stg_BWMFI : public Strategy {
           if (_method == 4) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
           break;
         case ORDER_TYPE_SELL:
+          // Sell: The appearance of three green bars in a row
+          // means that the market is overbought or oversold.
           _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
           _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
           if (_method == 1) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
