@@ -5,7 +5,7 @@
 
 // Defines indicator's parameter values for the given pair symbol and timeframe.
 struct Indi_BWMFI_Params_{{ Timeframe }} : BWMFIParams {
-  Indi_BWMFI_Params_{{ Timeframe }}() : BWMFIParams(indi_bwmfi_defaults, PERIOD_{{ Timeframe }}) { shift = {{ BWMFI_Shift | default(0) }}; }
+  Indi_BWMFI_Params_{{ Timeframe }}() : BWMFIParams(indi_bwmfi_defaults, PERIOD_{{ Timeframe }}) { shift = {{ BWMFI_Indi_BWMFI_Shift | default(0) }}; }
 } indi_bwmfi_{{ Timeframe | lower }};
 
 // Defines strategy's parameter values for the given pair symbol and timeframe.
