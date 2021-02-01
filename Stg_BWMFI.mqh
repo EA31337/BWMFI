@@ -62,10 +62,10 @@ class Stg_BWMFI : public Strategy {
   static Stg_BWMFI *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
     // Initialize strategy initial values.
     StgParams _stg_params(stg_bwmfi_defaults);
-    if (!Terminal::IsOptimization()) {
-      SetParamsByTf<StgParams>(_stg_params, _tf, stg_bwmfi_m1, stg_bwmfi_m5, stg_bwmfi_m15, stg_bwmfi_m30, stg_bwmfi_h1,
-                               stg_bwmfi_h4, stg_bwmfi_h8);
-    }
+#ifdef __config__
+    SetParamsByTf<StgParams>(_stg_params, _tf, stg_bwmfi_m1, stg_bwmfi_m5, stg_bwmfi_m15, stg_bwmfi_m30, stg_bwmfi_h1,
+                             stg_bwmfi_h4, stg_bwmfi_h8);
+#endif
     // Initialize indicator.
     BWMFIParams _indi_params(_tf);
     _stg_params.SetIndicator(new Indi_BWMFI(_indi_params));
