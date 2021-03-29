@@ -16,7 +16,7 @@ INPUT int BWMFI_PriceStopMethod = 0;                                // Price sto
 INPUT float BWMFI_PriceStopLevel = 0;                               // Price stop level
 INPUT int BWMFI_TickFilterMethod = 1;                               // Tick filter method
 INPUT float BWMFI_MaxSpread = 4.0;                                  // Max spread to trade (pips)
-INPUT int BWMFI_Shift = 0;                                          // Shift (relative to the current bar, 0 - default)
+INPUT short BWMFI_Shift = 0;                                        // Shift (relative to the current bar, 0 - default)
 INPUT int BWMFI_OrderCloseTime = -20;                               // Order close time in mins (>0) or bars (<0)
 INPUT string __BWMFI_Indi_BWMFI_Parameters__ =
     "-- BWMFI strategy: BWMFI indicator params --";  // >>> BWMFI strategy: BWMFI indicator <<<
