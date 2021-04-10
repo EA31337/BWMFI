@@ -82,7 +82,7 @@ class Stg_BWMFI : public Strategy {
    * Check strategy's opening signal.
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method = 0, float _level = 0.0f, int _shift = 0) {
-    Indi_BWMFI *_indi = Data();
+    Indi_BWMFI *_indi = GetIndicator();
     bool _is_valid = _indi[CURR].IsValid() && _indi[PREV].IsValid() && _indi[PPREV].IsValid();
     bool _result = _is_valid;
     if (_is_valid) {
@@ -121,7 +121,7 @@ class Stg_BWMFI : public Strategy {
    */
   float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
     Chart *_chart = sparams.GetChart();
-    Indicator *_indi = Data();
+    Indicator *_indi = GetIndicator();
     double _trail = _level * _chart.GetPipSize();
     int _bar_count = (int)_level * 10;
     int _direction = Order::OrderDirection(_cmd, _mode);
