@@ -57,7 +57,7 @@ struct Stg_BWMFI_Params : StgParams {
 
 class Stg_BWMFI : public Strategy {
  public:
-  Stg_BWMFI(StgParams &_params, string _name) : Strategy(_params, _name) {}
+  Stg_BWMFI(StgParams &_params, Trade *_trade = NULL, string _name = "") : Strategy(_params, _trade, _name) {}
 
   static Stg_BWMFI *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
     // Initialize strategy initial values.
@@ -69,12 +69,9 @@ class Stg_BWMFI : public Strategy {
     // Initialize indicator.
     BWMFIParams _indi_params(_tf);
     _stg_params.SetIndicator(new Indi_BWMFI(_indi_params));
-    // Initialize strategy parameters.
-    _stg_params.GetLog().SetLevel(_log_level);
-    _stg_params.SetMagicNo(_magic_no);
-    _stg_params.SetTf(_tf, _Symbol);
-    // Initialize strategy instance.
-    Strategy *_strat = new Stg_BWMFI(_stg_params, "BWMFI");
+    // Initialize Strategy instance.
+    TradeParams _tparams(_magic_no, _log_level);
+    Strategy *_strat = new Stg_BWMFI(_stg_params, new Trade(new Chart(_tf, _Symbol)), "BWMFI");
     return _strat;
   }
 
@@ -120,7 +117,7 @@ class Stg_BWMFI : public Strategy {
    * Gets price stop value for profit take or stop loss.
    */
   float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
-    Chart *_chart = sparams.GetChart();
+    Chart *_chart = trade.GetChart();
     Indicator *_indi = GetIndicator();
     double _trail = _level * _chart.GetPipSize();
     int _bar_count = (int)_level * 10;
