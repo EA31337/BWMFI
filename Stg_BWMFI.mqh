@@ -6,13 +6,13 @@
 // User input params.
 INPUT string __BWMFI_Parameters__ = "-- BWMFI strategy params --";  // >>> BWMFI <<<
 INPUT float BWMFI_LotSize = 0;                                      // Lot size
-INPUT int BWMFI_SignalOpenMethod = 0;                               // Signal open method
+INPUT int BWMFI_SignalOpenMethod = 2;                               // Signal open method
 INPUT float BWMFI_SignalOpenLevel = 1.0f;                           // Signal open level
-INPUT int BWMFI_SignalOpenFilterMethod = 1;                         // Signal open filter method
+INPUT int BWMFI_SignalOpenFilterMethod = 32;                         // Signal open filter method
 INPUT int BWMFI_SignalOpenBoostMethod = 0;                          // Signal open boost method
-INPUT int BWMFI_SignalCloseMethod = 0;                              // Signal close method
+INPUT int BWMFI_SignalCloseMethod = 2;                              // Signal close method
 INPUT float BWMFI_SignalCloseLevel = 1.0f;                          // Signal close level
-INPUT int BWMFI_PriceStopMethod = 0;                                // Price stop method
+INPUT int BWMFI_PriceStopMethod = 1;                                // Price stop method
 INPUT float BWMFI_PriceStopLevel = 0;                               // Price stop level
 INPUT int BWMFI_TickFilterMethod = 1;                               // Tick filter method
 INPUT float BWMFI_MaxSpread = 4.0;                                  // Max spread to trade (pips)
@@ -113,32 +113,5 @@ class Stg_BWMFI : public Strategy {
       }
     }
     return _result;
-  }
-
-  /**
-   * Gets price stop value for profit take or stop loss.
-   */
-  float PriceStop(ENUM_ORDER_TYPE _cmd, ENUM_ORDER_TYPE_VALUE _mode, int _method = 0, float _level = 0.0) {
-    Chart *_chart = trade.GetChart();
-    Indicator *_indi = GetIndicator();
-    double _trail = _level * _chart.GetPipSize();
-    int _bar_count = (int)_level * 10;
-    int _direction = Order::OrderDirection(_cmd, _mode);
-    double _change_pc = Math::ChangeInPct(_indi[1][0], _indi[0][0]);
-    double _default_value = _chart.GetCloseOffer(_cmd) + _trail * _method * _direction;
-    double _price_offer = _chart.GetOpenOffer(_cmd);
-    double _result = _default_value;
-    ENUM_APPLIED_PRICE _ap = _direction > 0 ? PRICE_HIGH : PRICE_LOW;
-    switch (_method) {
-      case 1:
-        _result = _indi.GetPrice(
-            _ap, _direction > 0 ? _indi.GetHighest<double>(_bar_count) : _indi.GetLowest<double>(_bar_count));
-        break;
-      case 2:
-        _result = Math::ChangeByPct(_price_offer, (float)_change_pc / _level / 100);
-        break;
-    }
-    _result = _result > 0 ? _result + _trail : 0;
-    return (float)_result;
   }
 };
