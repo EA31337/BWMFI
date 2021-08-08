@@ -11,6 +11,7 @@ INPUT float BWMFI_SignalOpenLevel = 1.0f;     // Signal open level
 INPUT int BWMFI_SignalOpenFilterMethod = 32;  // Signal open filter method
 INPUT int BWMFI_SignalOpenBoostMethod = 0;    // Signal open boost method
 INPUT int BWMFI_SignalCloseMethod = 2;        // Signal close method
+INPUT int BWMFI_SignalCloseFilter = 0;        // Signal close filter (-127-127)
 INPUT float BWMFI_SignalCloseLevel = 1.0f;    // Signal close level
 INPUT int BWMFI_PriceStopMethod = 1;          // Price stop method
 INPUT float BWMFI_PriceStopLevel = 0;         // Price stop level
@@ -32,9 +33,9 @@ struct Indi_BWMFI_Params_Defaults : BWMFIParams {
 struct Stg_BWMFI_Params_Defaults : StgParams {
   Stg_BWMFI_Params_Defaults()
       : StgParams(::BWMFI_SignalOpenMethod, ::BWMFI_SignalOpenFilterMethod, ::BWMFI_SignalOpenLevel,
-                  ::BWMFI_SignalOpenBoostMethod, ::BWMFI_SignalCloseMethod, ::BWMFI_SignalCloseLevel,
-                  ::BWMFI_PriceStopMethod, ::BWMFI_PriceStopLevel, ::BWMFI_TickFilterMethod, ::BWMFI_MaxSpread,
-                  ::BWMFI_Shift, ::BWMFI_OrderCloseTime) {}
+                  ::BWMFI_SignalOpenBoostMethod, ::BWMFI_SignalCloseMethod, ::BWMFI_SignalCloseFilter,
+                  ::BWMFI_SignalCloseLevel, ::BWMFI_PriceStopMethod, ::BWMFI_PriceStopLevel, ::BWMFI_TickFilterMethod,
+                  ::BWMFI_MaxSpread, ::BWMFI_Shift, ::BWMFI_OrderCloseTime) {}
 } stg_bwmfi_defaults;
 
 // Struct to define strategy parameters to override.
