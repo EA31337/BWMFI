@@ -18,6 +18,8 @@ INPUT float BWMFI_PriceStopLevel = 0;         // Price stop level
 INPUT int BWMFI_TickFilterMethod = 1;         // Tick filter method
 INPUT float BWMFI_MaxSpread = 4.0;            // Max spread to trade (pips)
 INPUT short BWMFI_Shift = 0;                  // Shift (relative to the current bar, 0 - default)
+INPUT float BWMFI_OrderCloseLoss = 0;         // Order close loss
+INPUT float BWMFI_OrderCloseProfit = 0;       // Order close profit
 INPUT int BWMFI_OrderCloseTime = -20;         // Order close time in mins (>0) or bars (<0)
 INPUT_GROUP("BWMFI strategy: BWMFI indicator params");
 INPUT int BWMFI_Indi_BWMFI_Shift = 0;  // Shift
@@ -35,7 +37,11 @@ struct Stg_BWMFI_Params_Defaults : StgParams {
       : StgParams(::BWMFI_SignalOpenMethod, ::BWMFI_SignalOpenFilterMethod, ::BWMFI_SignalOpenLevel,
                   ::BWMFI_SignalOpenBoostMethod, ::BWMFI_SignalCloseMethod, ::BWMFI_SignalCloseFilter,
                   ::BWMFI_SignalCloseLevel, ::BWMFI_PriceStopMethod, ::BWMFI_PriceStopLevel, ::BWMFI_TickFilterMethod,
-                  ::BWMFI_MaxSpread, ::BWMFI_Shift, ::BWMFI_OrderCloseTime) {}
+                  ::BWMFI_MaxSpread, ::BWMFI_Shift) {
+    Set(STRAT_PARAM_OCL, BWMFI_OrderCloseLoss);
+    Set(STRAT_PARAM_OCP, BWMFI_OrderCloseProfit);
+    Set(STRAT_PARAM_OCT, BWMFI_OrderCloseTime);
+  }
 } stg_bwmfi_defaults;
 
 // Struct to define strategy parameters to override.
