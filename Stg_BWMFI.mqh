@@ -4,23 +4,22 @@
  */
 
 // User input params.
-INPUT string __BWMFI_Parameters__ = "-- BWMFI strategy params --";  // >>> BWMFI <<<
-INPUT float BWMFI_LotSize = 0;                                      // Lot size
-INPUT int BWMFI_SignalOpenMethod = 2;                               // Signal open method
-INPUT float BWMFI_SignalOpenLevel = 1.0f;                           // Signal open level
-INPUT int BWMFI_SignalOpenFilterMethod = 32;                        // Signal open filter method
-INPUT int BWMFI_SignalOpenBoostMethod = 0;                          // Signal open boost method
-INPUT int BWMFI_SignalCloseMethod = 2;                              // Signal close method
-INPUT float BWMFI_SignalCloseLevel = 1.0f;                          // Signal close level
-INPUT int BWMFI_PriceStopMethod = 1;                                // Price stop method
-INPUT float BWMFI_PriceStopLevel = 0;                               // Price stop level
-INPUT int BWMFI_TickFilterMethod = 1;                               // Tick filter method
-INPUT float BWMFI_MaxSpread = 4.0;                                  // Max spread to trade (pips)
-INPUT short BWMFI_Shift = 0;                                        // Shift (relative to the current bar, 0 - default)
-INPUT int BWMFI_OrderCloseTime = -20;                               // Order close time in mins (>0) or bars (<0)
-INPUT string __BWMFI_Indi_BWMFI_Parameters__ =
-    "-- BWMFI strategy: BWMFI indicator params --";  // >>> BWMFI strategy: BWMFI indicator <<<
-INPUT int BWMFI_Indi_BWMFI_Shift = 0;                // Shift
+INPUT_GROUP("BWMFI strategy: strategy params");
+INPUT float BWMFI_LotSize = 0;                // Lot size
+INPUT int BWMFI_SignalOpenMethod = 2;         // Signal open method
+INPUT float BWMFI_SignalOpenLevel = 1.0f;     // Signal open level
+INPUT int BWMFI_SignalOpenFilterMethod = 32;  // Signal open filter method
+INPUT int BWMFI_SignalOpenBoostMethod = 0;    // Signal open boost method
+INPUT int BWMFI_SignalCloseMethod = 2;        // Signal close method
+INPUT float BWMFI_SignalCloseLevel = 1.0f;    // Signal close level
+INPUT int BWMFI_PriceStopMethod = 1;          // Price stop method
+INPUT float BWMFI_PriceStopLevel = 0;         // Price stop level
+INPUT int BWMFI_TickFilterMethod = 1;         // Tick filter method
+INPUT float BWMFI_MaxSpread = 4.0;            // Max spread to trade (pips)
+INPUT short BWMFI_Shift = 0;                  // Shift (relative to the current bar, 0 - default)
+INPUT int BWMFI_OrderCloseTime = -20;         // Order close time in mins (>0) or bars (<0)
+INPUT_GROUP("BWMFI strategy: BWMFI indicator params");
+INPUT int BWMFI_Indi_BWMFI_Shift = 0;  // Shift
 
 // Structs.
 
