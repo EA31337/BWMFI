@@ -9,6 +9,7 @@ INPUT float BWMFI_LotSize = 0;                // Lot size
 INPUT int BWMFI_SignalOpenMethod = 2;         // Signal open method
 INPUT float BWMFI_SignalOpenLevel = 1.0f;     // Signal open level
 INPUT int BWMFI_SignalOpenFilterMethod = 32;  // Signal open filter method
+INPUT int BWMFI_SignalOpenFilterTime = 6;     // Signal open filter time
 INPUT int BWMFI_SignalOpenBoostMethod = 0;    // Signal open boost method
 INPUT int BWMFI_SignalCloseMethod = 2;        // Signal close method
 INPUT int BWMFI_SignalCloseFilter = 0;        // Signal close filter (-127-127)
@@ -41,6 +42,7 @@ struct Stg_BWMFI_Params_Defaults : StgParams {
     Set(STRAT_PARAM_OCL, BWMFI_OrderCloseLoss);
     Set(STRAT_PARAM_OCP, BWMFI_OrderCloseProfit);
     Set(STRAT_PARAM_OCT, BWMFI_OrderCloseTime);
+    Set(STRAT_PARAM_SOFT, BWMFI_SignalOpenFilterTime);
   }
 } stg_bwmfi_defaults;
 
