@@ -6,15 +6,15 @@
 // User input params.
 INPUT_GROUP("BWMFI strategy: strategy params");
 INPUT float BWMFI_LotSize = 0;                // Lot size
-INPUT int BWMFI_SignalOpenMethod = 2;         // Signal open method
+INPUT int BWMFI_SignalOpenMethod = 16;        // Signal open method
 INPUT float BWMFI_SignalOpenLevel = 1.0f;     // Signal open level
 INPUT int BWMFI_SignalOpenFilterMethod = 32;  // Signal open filter method
 INPUT int BWMFI_SignalOpenFilterTime = 6;     // Signal open filter time
 INPUT int BWMFI_SignalOpenBoostMethod = 0;    // Signal open boost method
-INPUT int BWMFI_SignalCloseMethod = 2;        // Signal close method
+INPUT int BWMFI_SignalCloseMethod = 16;       // Signal close method
 INPUT int BWMFI_SignalCloseFilter = 0;        // Signal close filter (-127-127)
 INPUT float BWMFI_SignalCloseLevel = 1.0f;    // Signal close level
-INPUT int BWMFI_PriceStopMethod = 1;          // Price stop method
+INPUT int BWMFI_PriceStopMethod = 1;          // Price stop method (0-127)
 INPUT float BWMFI_PriceStopLevel = 0;         // Price stop level
 INPUT int BWMFI_TickFilterMethod = 1;         // Tick filter method
 INPUT float BWMFI_MaxSpread = 4.0;            // Max spread to trade (pips)
@@ -99,26 +99,23 @@ class Stg_BWMFI : public Strategy {
     // Brown bar: occurs when the volume and indicator values fall simultaneously.
     // Blue (false) bar: appears during the decrease in trading volume against the backdrop of the rising prices.
     // Pink (squatting) bar: It appears most often at the end of a protracted trend.
+    IndicatorSignal _signals = _indi.GetSignals(4, _shift);
     switch (_cmd) {
       case ORDER_TYPE_BUY:
         // Buy: The appearance of three green bars in a row
         // means that the market is overbought or oversold.
         _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
         _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (_method == 1) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (_method == 2) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-        if (_method == 3) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-        if (_method == 4) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+        _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
         break;
       case ORDER_TYPE_SELL:
         // Sell: The appearance of three green bars in a row
         // means that the market is overbought or oversold.
         _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
         _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (_method == 1) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        if (_method == 2) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_SQUAT;
-        if (_method == 3) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FAKE;
-        if (_method == 4) _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_FADE;
+        _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
         break;
     }
     return _result;
