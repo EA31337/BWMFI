@@ -54,6 +54,7 @@ struct Stg_BWMFI_Params : StgParams {
   Stg_BWMFI_Params(StgParams &_sparams) : sparams(stg_bwmfi_defaults) { sparams = _sparams; }
 };
 
+#ifdef __config__
 // Loads pair specific param values.
 #include "config/H1.h"
 #include "config/H4.h"
@@ -62,6 +63,7 @@ struct Stg_BWMFI_Params : StgParams {
 #include "config/M15.h"
 #include "config/M30.h"
 #include "config/M5.h"
+#endif
 
 class Stg_BWMFI : public Strategy {
  public:
