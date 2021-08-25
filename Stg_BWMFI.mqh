@@ -21,7 +21,7 @@ INPUT float BWMFI_MaxSpread = 4.0;            // Max spread to trade (pips)
 INPUT short BWMFI_Shift = 0;                  // Shift (relative to the current bar, 0 - default)
 INPUT float BWMFI_OrderCloseLoss = 0;         // Order close loss
 INPUT float BWMFI_OrderCloseProfit = 0;       // Order close profit
-INPUT int BWMFI_OrderCloseTime = -20;         // Order close time in mins (>0) or bars (<0)
+INPUT int BWMFI_OrderCloseTime = -30;         // Order close time in mins (>0) or bars (<0)
 INPUT_GROUP("BWMFI strategy: BWMFI indicator params");
 INPUT int BWMFI_Indi_BWMFI_Shift = 0;  // Shift
 
