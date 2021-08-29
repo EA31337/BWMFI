@@ -39,6 +39,7 @@ struct Stg_BWMFI_Params_Defaults : StgParams {
                   ::BWMFI_SignalOpenBoostMethod, ::BWMFI_SignalCloseMethod, ::BWMFI_SignalCloseFilter,
                   ::BWMFI_SignalCloseLevel, ::BWMFI_PriceStopMethod, ::BWMFI_PriceStopLevel, ::BWMFI_TickFilterMethod,
                   ::BWMFI_MaxSpread, ::BWMFI_Shift) {
+    Set(STRAT_PARAM_LS, BWMFI_LotSize);
     Set(STRAT_PARAM_OCL, BWMFI_OrderCloseLoss);
     Set(STRAT_PARAM_OCP, BWMFI_OrderCloseProfit);
     Set(STRAT_PARAM_OCT, BWMFI_OrderCloseTime);
