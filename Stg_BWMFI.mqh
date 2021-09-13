@@ -66,6 +66,7 @@ class Stg_BWMFI : public Strategy {
   static Stg_BWMFI *Init(ENUM_TIMEFRAMES _tf = NULL) {
     // Initialize strategy initial values.
     Indi_BWMFI_Params_Defaults indi_bwmfi_defaults;
+    BWMFIParams _indi_params(indi_bwmfi_defaults, _tf);
     Stg_BWMFI_Params_Defaults stg_bwmfi_defaults;
     StgParams _stg_params(stg_bwmfi_defaults);
 #ifdef __config__
@@ -73,7 +74,6 @@ class Stg_BWMFI : public Strategy {
                              stg_bwmfi_h4, stg_bwmfi_h8);
 #endif
     // Initialize indicator.
-    BWMFIParams _indi_params(_tf);
     _stg_params.SetIndicator(new Indi_BWMFI(_indi_params));
     // Initialize Strategy instance.
     ChartParams _cparams(_tf, _Symbol);
