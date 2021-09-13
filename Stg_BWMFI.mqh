@@ -30,7 +30,7 @@ INPUT int BWMFI_Indi_BWMFI_Shift = 0;  // Shift
 // Defines struct with default user indicator values.
 struct Indi_BWMFI_Params_Defaults : BWMFIParams {
   Indi_BWMFI_Params_Defaults() : BWMFIParams(::BWMFI_Indi_BWMFI_Shift) {}
-} indi_bwmfi_defaults;
+};
 
 // Defines struct with default user strategy values.
 struct Stg_BWMFI_Params_Defaults : StgParams {
@@ -45,7 +45,7 @@ struct Stg_BWMFI_Params_Defaults : StgParams {
     Set(STRAT_PARAM_OCT, BWMFI_OrderCloseTime);
     Set(STRAT_PARAM_SOFT, BWMFI_SignalOpenFilterTime);
   }
-} stg_bwmfi_defaults;
+};
 
 #ifdef __config__
 // Loads pair specific param values.
@@ -65,6 +65,8 @@ class Stg_BWMFI : public Strategy {
 
   static Stg_BWMFI *Init(ENUM_TIMEFRAMES _tf = NULL) {
     // Initialize strategy initial values.
+    Indi_BWMFI_Params_Defaults indi_bwmfi_defaults;
+    Stg_BWMFI_Params_Defaults stg_bwmfi_defaults;
     StgParams _stg_params(stg_bwmfi_defaults);
 #ifdef __config__
     SetParamsByTf<StgParams>(_stg_params, _tf, stg_bwmfi_m1, stg_bwmfi_m5, stg_bwmfi_m15, stg_bwmfi_m30, stg_bwmfi_h1,
