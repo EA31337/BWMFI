@@ -23,13 +23,16 @@ INPUT float BWMFI_OrderCloseLoss = 80;        // Order close loss
 INPUT float BWMFI_OrderCloseProfit = 80;      // Order close profit
 INPUT int BWMFI_OrderCloseTime = -30;         // Order close time in mins (>0) or bars (<0)
 INPUT_GROUP("BWMFI strategy: BWMFI indicator params");
-INPUT int BWMFI_Indi_BWMFI_Shift = 0;  // Shift
+INPUT int BWMFI_Indi_BWMFI_Shift = 0;                                      // Shift
+INPUT ENUM_IDATA_SOURCE_TYPE BWMFI_Indi_BWMFI_SourceType = IDATA_BUILTIN;  // Source type
 
 // Structs.
 
 // Defines struct with default user indicator values.
 struct Indi_BWMFI_Params_Defaults : BWMFIParams {
-  Indi_BWMFI_Params_Defaults() : BWMFIParams(::BWMFI_Indi_BWMFI_Shift) {}
+  Indi_BWMFI_Params_Defaults() : BWMFIParams(::BWMFI_Indi_BWMFI_Shift) {
+    SetDataSourceType(::BWMFI_Indi_BWMFI_SourceType);
+  }
 };
 
 // Defines struct with default user strategy values.
@@ -101,17 +104,17 @@ class Stg_BWMFI : public Strategy {
       case ORDER_TYPE_BUY:
         // Buy: The appearance of three green bars in a row
         // means that the market is overbought or oversold.
-        _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        _result &= int(_indi[_shift][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
+        _result &= int(_indi[_shift + 1][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
+        _result &= int(_indi[_shift + 2][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
         _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
         break;
       case ORDER_TYPE_SELL:
         // Sell: The appearance of three green bars in a row
         // means that the market is overbought or oversold.
-        _result &= _indi[CURR][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        _result &= _indi[PREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
-        _result &= _indi[PPREV][(int)BWMFI_HISTCOLOR] == MFI_HISTCOLOR_GREEN;
+        _result &= int(_indi[_shift][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
+        _result &= int(_indi[_shift + 1][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
+        _result &= int(_indi[_shift + 2][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
         _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
         break;
     }
