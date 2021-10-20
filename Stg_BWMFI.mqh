@@ -23,7 +23,7 @@ INPUT float BWMFI_OrderCloseLoss = 80;        // Order close loss
 INPUT float BWMFI_OrderCloseProfit = 80;      // Order close profit
 INPUT int BWMFI_OrderCloseTime = -30;         // Order close time in mins (>0) or bars (<0)
 INPUT_GROUP("BWMFI strategy: BWMFI indicator params");
-INPUT int BWMFI_Indi_BWMFI_Shift = 0;                                      // Shift
+INPUT int BWMFI_Indi_BWMFI_Shift = 1;                                      // Shift
 INPUT ENUM_IDATA_SOURCE_TYPE BWMFI_Indi_BWMFI_SourceType = IDATA_BUILTIN;  // Source type
 
 // Structs.
