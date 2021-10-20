@@ -104,17 +104,17 @@ class Stg_BWMFI : public Strategy {
       case ORDER_TYPE_BUY:
         // Buy: The appearance of three green bars in a row
         // means that the market is overbought or oversold.
-        _result &= int(_indi[_shift][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
         _result &= int(_indi[_shift + 1][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
         _result &= int(_indi[_shift + 2][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
+        _result &= int(_indi[_shift + 3][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
         _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
         break;
       case ORDER_TYPE_SELL:
         // Sell: The appearance of three green bars in a row
         // means that the market is overbought or oversold.
-        _result &= int(_indi[_shift][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
         _result &= int(_indi[_shift + 1][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
         _result &= int(_indi[_shift + 2][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
+        _result &= int(_indi[_shift + 3][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
         _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
         break;
     }
