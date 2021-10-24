@@ -4,8 +4,8 @@
  */
 
 // Defines indicator's parameter values for the given pair symbol and timeframe.
-struct Indi_BWMFI_Params_H1 : BWMFIParams {
-  Indi_BWMFI_Params_H1() : BWMFIParams(indi_bwmfi_defaults, PERIOD_H1) { shift = 0; }
+struct Indi_BWMFI_Params_H1 : IndiBWIndiMFIParams {
+  Indi_BWMFI_Params_H1() : IndiBWIndiMFIParams(indi_bwmfi_defaults, PERIOD_H1) { shift = 0; }
 } indi_bwmfi_h1;
 
 // Defines strategy's parameter values for the given pair symbol and timeframe.

@@ -29,8 +29,8 @@ INPUT ENUM_IDATA_SOURCE_TYPE BWMFI_Indi_BWMFI_SourceType = IDATA_BUILTIN;  // So
 // Structs.
 
 // Defines struct with default user indicator values.
-struct Indi_BWMFI_Params_Defaults : BWMFIParams {
-  Indi_BWMFI_Params_Defaults() : BWMFIParams(::BWMFI_Indi_BWMFI_Shift) {
+struct Indi_BWMFI_Params_Defaults : IndiBWIndiMFIParams {
+  Indi_BWMFI_Params_Defaults() : IndiBWIndiMFIParams(::BWMFI_Indi_BWMFI_Shift) {
     SetDataSourceType(::BWMFI_Indi_BWMFI_SourceType);
   }
 };
@@ -69,7 +69,7 @@ class Stg_BWMFI : public Strategy {
   static Stg_BWMFI *Init(ENUM_TIMEFRAMES _tf = NULL) {
     // Initialize strategy initial values.
     Indi_BWMFI_Params_Defaults indi_bwmfi_defaults;
-    BWMFIParams _indi_params(indi_bwmfi_defaults, _tf);
+    IndiBWIndiMFIParams _indi_params(indi_bwmfi_defaults, _tf);
     Stg_BWMFI_Params_Defaults stg_bwmfi_defaults;
     StgParams _stg_params(stg_bwmfi_defaults);
 #ifdef __config__
