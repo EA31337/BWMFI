@@ -89,7 +89,8 @@ class Stg_BWMFI : public Strategy {
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method = 0, float _level = 0.0f, int _shift = 0) {
     Indi_BWMFI *_indi = GetIndicator();
-    bool _result = _indi.GetFlag(INDI_ENTRY_FLAG_IS_VALID, _shift);
+    int _ishift = ::BWMFI_Indi_BWMFI_Shift;
+    bool _result = _indi.GetFlag(INDI_ENTRY_FLAG_IS_VALID, _ishift);
     if (!_result) {
       // Returns false when indicator data is not valid.
       return false;
@@ -98,22 +99,22 @@ class Stg_BWMFI : public Strategy {
     // Brown bar: occurs when the volume and indicator values fall simultaneously.
     // Blue (false) bar: appears during the decrease in trading volume against the backdrop of the rising prices.
     // Pink (squatting) bar: It appears most often at the end of a protracted trend.
-    IndicatorSignal _signals = _indi.GetSignals(4, _shift);
+    IndicatorSignal _signals = _indi.GetSignals(4, _ishift);
     switch (_cmd) {
       case ORDER_TYPE_BUY:
         // Buy: The appearance of three green bars in a row
         // means that the market is overbought or oversold.
-        _result &= _indi.IsIncreasing(1, BWMFI_BUFFER, _shift);
-        _result &= int(_indi[_shift][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
-        _result &= int(_indi[_shift + 1][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
+        _result &= _indi.IsIncreasing(1, BWMFI_BUFFER, _ishift);
+        _result &= int(_indi[_ishift][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
+        _result &= int(_indi[_ishift + 1][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
         _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
         break;
       case ORDER_TYPE_SELL:
         // Sell: The appearance of three green bars in a row
         // means that the market is overbought or oversold.
-        _result &= _indi.IsDecreasing(1, BWMFI_BUFFER, _shift);
-        _result &= int(_indi[_shift][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
-        _result &= int(_indi[_shift + 1][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
+        _result &= _indi.IsDecreasing(1, BWMFI_BUFFER, _ishift);
+        _result &= int(_indi[_ishift][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
+        _result &= int(_indi[_ishift + 1][(int)BWMFI_HISTCOLOR]) == MFI_HISTCOLOR_GREEN;
         _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
         break;
     }
